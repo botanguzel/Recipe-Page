@@ -1,0 +1,102 @@
+.rec-bg {
+    background-image: url("../img/bg-img/chef.jpg");
+    background-size: cover; /* or background-size: contain; */
+    background-position: center; /* Optional: Center the image */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.hidden-col {
+    display: none;
+}
+
+.crd-detail {
+    color: aquamarine;
+    background-color: #0000004f;
+}
+.crd-body {
+    background-color: #0000004f;
+}
+.crd-body:hover {
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    transition: 0.5s ease-in-out;
+}
+.card-img-top {
+    width: 100%;
+    height: 25vw;
+    object-fit: cover;
+}
+.card-img-top:hover {
+    border-top-right-radius: 20px;
+    transition: 0.5s ease-in-out;
+}
+.card:hover {
+    border-bottom: 5px ridge rgba(238, 130, 238, 0.7);
+    border-right: 5px ridge rgba(238, 130, 238, 0.7);
+    border-radius: 5%;
+    background-color: #000000ad;
+    transform: scale(1.05);
+    transition: 0.5s ease-in-out;
+  }
+
+.rating {
+    display: inline-block;
+    pointer-events: none;
+}
+  
+.rating input {
+    display: none;
+}
+
+.rating label {
+    float: right;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+}
+
+.rating label:before {
+    content: '\2605';
+    font-size: 30px;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #6f00ff;
+    transition: color 0.3s;
+}
+
+
+.card:hover .overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.overlay {
+    cursor: pointer;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the last value for transparency */
+    color: aquamarine;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: left;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.overlay-text {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
