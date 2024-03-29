@@ -9,7 +9,7 @@ if (isset($_GET['type'])) {
     $type = $_GET['type'];
 
     if ($type === 'recipe') {
-        $stmt = $con->prepare("SELECT id, recipe_name, description, n_ingredients, ingredients, n_steps, steps, minutes, tags, nutrition, images, ranking
+        $stmt = $con->prepare("SELECT id, recipe_name, description, n_ingredients, ingredients, n_steps, steps, minutes, nutrition, images, ranking
                              FROM recipes LIMIT 100");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -67,7 +67,7 @@ if (isset($_GET['type'])) {
                 $stmt->bind_param("iss", $_POST['rec_id'], $db_username, $_POST['comment']);
                 $stmt->execute();
                 if ($stmt->affected_rows > 0) {
-                    exit('Password Changed Succesfully!');
+                    exit('Comment has been added!');
                 } else {
                     exit("Error creating the password." . $con->error);
                 }
@@ -107,7 +107,7 @@ if (isset($_GET['type'])) {
     }
 } elseif (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $con->prepare("SELECT id, recipe_name, description, n_ingredients, ingredients, n_steps, steps, minutes, tags, nutrition, images, ranking, comments
+    $stmt = $con->prepare("SELECT id, recipe_name, description, n_ingredients, ingredients, n_steps, steps, minutes, nutrition, images, ranking, comments
                             FROM recipes where id = ?");
     $stmt->bind_param('s', $id);
     $stmt->execute();

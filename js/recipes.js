@@ -36,12 +36,6 @@ function createRating(cardIndex, cRank) {
   return ratingDiv;
 }
 
-
-
-function redirectToDetails(param) {
-  window.location.href = 'recipe-detail.html?' + param;
-}
-
 function cardCreator(recipe_name, recipe_desc, url, rIndex, cRank, cal, n_ingredients, n_steps) {
   const col = document.createElement('div');
   const overlay = document.createElement('div');

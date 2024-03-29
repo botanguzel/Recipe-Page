@@ -196,3 +196,58 @@
   transform: translate(0);
 }
 }
+
+.passwordContainer {
+  position: relative;
+}
+
+.passwordContainer input[type="password"] {
+  padding-right: 30px; /* Adjust this value as needed */
+}
+
+.passwordContainer .bi-exclamation-circle {
+  position: absolute;
+  right: 5px; /* Adjust this value as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  color: red; /* Change color if needed */
+  cursor: pointer; /* Optional: make the icon clickable */
+}
+.passwordContainer .bi-check-circle {
+  position: absolute;
+  right: 5px; /* Adjust this value as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  color: green; /* Change color if needed */
+  cursor: pointer; /* Optional: make the icon clickable */
+}
+
+
+.mailContainer {
+  position: relative;
+}
+
+.mailContainer input[type="text"] {
+  padding-right: 30px; /* Adjust this value as needed */
+}
+.mailContainer .bi-check-circle {
+  position: absolute;
+  right: 5px; /* Adjust this value as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  color: green; /* Change color if needed */
+  cursor: pointer; /* Optional: make the icon clickable */
+}
+.mailContainer .bi-exclamation-circle {
+  position: absolute;
+  right: 5px; /* Adjust this value as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  color: red; /* Change color if needed */
+  cursor: pointer; /* Optional: make the icon clickable */
+}
+
+.custom-tooltip {
+  --bs-tooltip-bg: var(--bd-violet-bg);
+  --bs-tooltip-color: var(--bs-white);
+}

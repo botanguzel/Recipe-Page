@@ -219,6 +219,7 @@ async function loadPage(id) {
     const comData =  await comments.json();
     const name = capitalizeFirstLetters(data.recipe_name);
     const ingredientsArray = JSON.parse(data.ingredients.replace(/'/g, '"'));
+    console.log(data.steps);
     const stepsArray = JSON.parse(data.steps.replace(/'/g, '"'));
     const a = createCard(name, data.description, ingredientsArray, data.n_ingredients, stepsArray, data.n_steps,
                         data.ranking, data.images, data.minutes, data.nutrition, comData);

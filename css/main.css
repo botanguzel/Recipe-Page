@@ -31,11 +31,10 @@
 }
 
 .hhe {
-    background-image: url("../img/bg-img/bg4.jpg");
-    background-size: cover; /* or background-size: contain; */
-    background-position: center; /* Optional: Center the image */
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+  background-color: #161616b9;
+  box-shadow: inset 1px 15px 100px 0px #595959;
+  outline: 1px solid #2b9962;
+  border-radius: 10px
 }
 
 /* Style The Dropdown Button */

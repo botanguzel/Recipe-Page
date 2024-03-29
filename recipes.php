@@ -1,4 +1,4 @@
-<?php include_once('./navbar.php'); ?>
+<?php include_once('navbar.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,6 +20,6 @@
         </div>
       </div>
   </div>
-  <?php include_once('./footer.html'); ?>
+  <?php include_once('footer.html'); ?>
 </body>
 </html>

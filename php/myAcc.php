@@ -72,14 +72,22 @@
 									<div id="welcome-line-2">Change Your Password</div>
 								</div>
 								<div id="input-area">
-									<div class="form-inp">
-										<input name='oldPass' placeholder="Old Password" type="password">
-									</div>
-									<div class="form-inp">
-										<input name="newPass" placeholder="New Password" type="password">
-									</div>
-									<div class="form-inp">
-										<input placeholder="New Password Again" type="password">
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-inp">
+												<input name='oldPass' placeholder="Old Password" type="password">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-inp">
+												<input name="newPass" placeholder="New Password" type="password">
+											</div>
+										</div>
+										<div class="col-md-4">
+										<div class="form-inp">
+												<input placeholder="New Password Again" type="password">
+											</div>
+										</div>
 									</div>
 								</div>
 								<div id="submit-button-cvr">
