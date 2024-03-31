@@ -40,7 +40,6 @@ function createRating(cRank) {
       .catch(error => {
           showNotificationButton(error);
       });
-      console.log(this.value); // Log the value of the clicked star
     });
   }
 
@@ -48,7 +47,7 @@ function createRating(cRank) {
   return ratingDiv;
 }
 
-function createCard(name, description, ingredients, n_ingredients, steps, n_steps, cRank, url, minutes, nutrition, comments) {
+function createCard(name, description, ingredients, n_ingredients, steps, n_steps, cRank, url, minutes, nutrition, comments, saved) {
   // Create main card container
   let cardContainer = document.createElement('div');
   let cardHeader = document.createElement('div');
@@ -72,6 +71,7 @@ function createCard(name, description, ingredients, n_ingredients, steps, n_step
   let textarea = document.createElement('input');
   let label = document.createElement('label');
   let commentButton = document.createElement('button');
+  let saveButton = document.createElement('div');
 
 
   cardContainer.classList.add('card', 'text-white');
@@ -105,6 +105,8 @@ function createCard(name, description, ingredients, n_ingredients, steps, n_step
   commentButton.style.width = '50%';
   commentButton.setAttribute('id', 'cmtBtn');
   commentButton.type ='button';
+  saveButton.style.fontSize = '25px';
+  saveButton.setAttribute('id', 'saveBtn');
 
   let t = '\nThis recipe requires: ' + n_ingredients + ' different ingredients.' + ' Total Calories: ' + nutrition
   rowDescHeader.innerHTML = 'Comments';
@@ -119,6 +121,8 @@ function createCard(name, description, ingredients, n_ingredients, steps, n_step
   cardText.textContent = description;
   footerText.textContent = t;
   cardTitle.textContent = name;
+  if (saved) { saveButton.innerHTML = '<i class="bi bi-bookmark-fill"></i>';}
+  else { saveButton.innerHTML = '<i class="bi bi-bookmark"></i>'}
   document.title = 'Recipe Box - ' + name;
   cardImage.src = url;
   hideButton.textContent = "Show Ingredients";
@@ -141,7 +145,6 @@ function createCard(name, description, ingredients, n_ingredients, steps, n_step
   formFloatingDiv.appendChild(commentButton);
   rowCom.appendChild(rowDescHeader);
   comments.forEach(com => {
-    console.log(com.username);
     if (com.username !== null) {
       let comment = createCommentContainer(com.comment_date, com.username, com.comment_text);
       rowCom.appendChild(comment);
@@ -150,6 +153,7 @@ function createCard(name, description, ingredients, n_ingredients, steps, n_step
   rowCom.appendChild(document.createElement('hr'))
   rowCom.appendChild(formFloatingDiv);  
   cardHeader.appendChild(cardTitle);
+  cardHeader.appendChild(saveButton);
   cardContainer.appendChild(cardHeader);
   colImage.appendChild(cardImage);
   rowDesc.appendChild(cardText)
@@ -215,19 +219,20 @@ async function loadPage(id) {
   try {
     const recipes = await fetch('../php/fetch.php?id=' + id);
     const comments = await fetch('../php/fetch.php?type=fetchComments&rid=' + id);
+    const saveState = await fetch('../php/fetch.php?type=checkSave&rid=' + id);
+    const saveData = await saveState.json();
     const data = await recipes.json();
     const comData =  await comments.json();
     const name = capitalizeFirstLetters(data.recipe_name);
     const ingredientsArray = JSON.parse(data.ingredients.replace(/'/g, '"'));
-    console.log(data.steps);
     const stepsArray = JSON.parse(data.steps.replace(/'/g, '"'));
     const a = createCard(name, data.description, ingredientsArray, data.n_ingredients, stepsArray, data.n_steps,
-                        data.ranking, data.images, data.minutes, data.nutrition, comData);
+                        data.ranking, data.images, data.minutes, data.nutrition, comData, saveData.saved);
     $('#main').append(a);
 
  
   } catch (error) {
-    console.error('Error adding entries:', error);
+    showNotificationButton('Error adding entries.');
   }
 }
 
@@ -238,10 +243,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cmtBtn').onclick = function() {
       var formData = new FormData(document.getElementById('commentForm'));
       formData.append('rec_id', rec_id);
-      console.log(formData)
       fetch('../php/fetch.php?type=comment', {
           method: 'POST',
           body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+          showNotificationButton(data);
+      })
+      .catch(error => {
+          showNotificationButton(error);
+      });
+    }
+    document.getElementById('saveBtn').onclick = function() {
+      var formData = new FormData();
+      formData.append('rec_id', rec_id);
+      fetch('../php/fetch.php?type=save', {
+        method: 'POST',
+        body: formData
       })
       .then(response => response.text())
       .then(data => {

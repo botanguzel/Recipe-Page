@@ -18,7 +18,6 @@ if (isset($_GET['type'])) {
         echo json_encode($data);
         exit;
     } elseif ($type === 'user') {
-        // Fetch advices from the database
         $stmt = $con->prepare("SELECT username, email FROM accounts WHERE userID = ?");
         $uid = $_SESSION['id'];
         $stmt->bind_param('s', $uid);
@@ -69,7 +68,7 @@ if (isset($_GET['type'])) {
                 if ($stmt->affected_rows > 0) {
                     exit('Comment has been added!');
                 } else {
-                    exit("Error creating the password." . $con->error);
+                    exit("An error occured when adding the comment!" . $con->error);
                 }
                 $stmt->close();
                 exit;
@@ -99,6 +98,64 @@ if (isset($_GET['type'])) {
             header('Content-Type: application/json');
             echo json_encode($data);
         } else { exit('Please Login Before Ranking!');}
+    } elseif ($type === 'save') {
+        if (isset($_SESSION['id'])) {
+            if (!empty($_POST['rec_id'])) {
+                $stmt = $con->prepare("SELECT COUNT(*) FROM saved_recipes WHERE user_id = ? AND recipe_id = ?");
+                $stmt->bind_param("si", $_SESSION['id'], $_POST['rec_id']);
+                $stmt->execute();
+                $stmt->bind_result($existing_count);
+                $stmt->fetch();
+                $stmt->close();
+                if ($existing_count > 0) {
+                    exit('Recipe is already saved!');
+                } else {
+                    $stmt = $con->prepare("SELECT username from accounts WHERE userID = ?;");
+                    $stmt->bind_param("s", $_SESSION['id']);
+                    $stmt->execute();
+                    $stmt->bind_result($db_username);
+                    $stmt->fetch();
+                    $stmt->close();
+                    $stmt = $con->prepare("INSERT INTO saved_recipes (user_id, recipe_id, date_saved) VALUES (?, ?, CURRENT_TIMESTAMP);");
+                    $stmt->bind_param("si", $_SESSION['id'], $_POST['rec_id']);
+                    $stmt->execute();
+                    if ($stmt->affected_rows > 0) {
+                        exit('Recipe has been added!');
+                    } else {
+                        exit("Error saving the recipe." . $con->error);
+                    }
+                    $stmt->close();
+                    exit;
+                }
+            } else { echo('Error saving the current recipe!');}
+        } else {exit('Please log in first to save!');}
+    } elseif ($type === 'checkSave') {
+        if (isset($_SESSION['id'])) {
+            if (!empty($_GET['rid'])) {
+                $rid = $_GET['rid'];
+                $stmt = $con->prepare("SELECT COUNT(*) FROM saved_recipes WHERE user_id = ? AND recipe_id = ?");
+                $stmt->bind_param("si", $_SESSION['id'], $rid);
+                $stmt->execute();
+                $stmt->bind_result($existing_count);
+                $stmt->fetch();
+                $stmt->close();
+                if ($existing_count > 0) {
+                    exit(json_encode(["saved" => true]));
+                } else  exit(json_encode(["saved" => false]));
+            } else { exit(json_encode(["saved" => false])); }
+        } else { exit(json_encode(["saved" => false])); }
+    } elseif ($type === 'getSaved') {
+        $stmt = $con->prepare("SELECT r.recipe_name, r.id FROM saved_recipes sr JOIN recipes r ON sr.recipe_id = r.id WHERE sr.user_id = ?");
+        $uid = $_SESSION['id'];
+        $stmt->bind_param('s', $uid);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
     } else {
         $data = [
             'error' => 'No order parameter provided'

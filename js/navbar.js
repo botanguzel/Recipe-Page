@@ -94,14 +94,13 @@ function sendVerification() {
     })
     .then(response => {
       if (response.ok) {
-        alert('Email sent successfully!');
+        showNotificationButton('Email sent successfully!');
       } else {
         throw new Error('Failed to send email.');
       }
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert('An error occurred while sending the email.');
+      showNotificationButton('An error occurred while sending the email.');
     });
 
 }

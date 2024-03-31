@@ -37,6 +37,9 @@
 						<a class="submit-button my-3" id="password-tab" data-toggle="pill" href="#password" role="tab" aria-controls="password" aria-selected="false">
 							<i class="fa fa-key text-center mr-1"></i> Password
 						</a>
+						<a class="submit-button my-3" id="saved-tab" data-toggle="pill" href="#saved" role="tab" aria-controls="saved" aria-selected="false">
+							<i class="bi bi-bookmark-heart-fill"></i> Saved Recipes
+						</a>
 					</div>
 				</div>
 
@@ -95,6 +98,17 @@
 								</div>
 							</div>
 						</form>
+					</div>
+
+					<div class="tab-pane fade" id="saved" role="tabpanel" aria-labelledby="saved-tab">
+						<div class="container-sm">
+							<div class="row galleryRow"> </div>
+							<div class="row load-more-container">
+								<div class="col-sm-12 text-center">
+									<button id="loadMoreBtn" class="btn btn-primary">Load More</button>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
