@@ -1,24 +1,22 @@
 <?php
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 require_once "connect.php";
-$data = [];
-
+$data = array();
+$sql = '';
+$stmt = '';
 // Check if a parameter named "type" is provided
 if (isset($_GET['type'])) {
     $type = $_GET['type'];
 
     if ($type === 'recipe') {
-        $stmt = $con->prepare("SELECT id, recipe_name, description, n_ingredients, ingredients, n_steps, steps, minutes, nutrition, images, ranking
-                             FROM recipes LIMIT 100");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) { $data[] = $row; }
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
+        $sql = ("SELECT top(10) id, recipeName, description, nIngredients, ingredients, nSteps, steps, cTime, nutrition, imgSrc, ranking
+                             FROM recipes");
+        $stmt = sqlsrv_prepare($con, $sql);
     } elseif ($type === 'user') {
-        $stmt = $con->prepare("SELECT username, email FROM accounts WHERE userID = ?");
+        $sql = ("SELECT username, email from rb_accounts WHERE userID = ?");
         $uid = $_SESSION['id'];
         $stmt->bind_param('s', $uid);
         $stmt->execute();
@@ -29,11 +27,12 @@ if (isset($_GET['type'])) {
         header('Content-Type: application/json');
         echo json_encode($data);
         exit;
-    } elseif ($type === 'update') {
+    }
+     elseif ($type === 'update') {
         if (!empty($_POST['newPass']) && !empty($_POST['oldPass'])) {
             $new_pwd = md5($_POST['newPass']);
             $old_pwd = md5($_POST['oldPass']);
-            $stmt = $con->prepare("SELECT password from accounts WHERE userID = ?;");
+            $stmt = $con->prepare("SELECT password from rb_accounts WHERE userID = ?;");
             $stmt->bind_param("s", $_SESSION['id']);
             $stmt->execute();
             $stmt->bind_result($db_password);
@@ -56,7 +55,7 @@ if (isset($_GET['type'])) {
     } elseif ($type === 'comment') {
         if (isset($_SESSION['id'])) {
             if (!empty($_POST['comment']) && !empty($_POST['rec_id'])) {
-                $stmt = $con->prepare("SELECT username from accounts WHERE userID = ?;");
+                $stmt = $con->prepare("SELECT username from rb_accounts WHERE userID = ?;");
                 $stmt->bind_param("s", $_SESSION['id']);
                 $stmt->execute();
                 $stmt->bind_result($db_username);
@@ -101,7 +100,7 @@ if (isset($_GET['type'])) {
     } elseif ($type === 'save') {
         if (isset($_SESSION['id'])) {
             if (!empty($_POST['rec_id'])) {
-                $stmt = $con->prepare("SELECT COUNT(*) FROM saved_recipes WHERE user_id = ? AND recipe_id = ?");
+                $stmt = $con->prepare("SELECT COUNT(*) FROM saved_recipes WHERE userID = ? AND recipe_id = ?");
                 $stmt->bind_param("si", $_SESSION['id'], $_POST['rec_id']);
                 $stmt->execute();
                 $stmt->bind_result($existing_count);
@@ -110,13 +109,13 @@ if (isset($_GET['type'])) {
                 if ($existing_count > 0) {
                     exit('Recipe is already saved!');
                 } else {
-                    $stmt = $con->prepare("SELECT username from accounts WHERE userID = ?;");
+                    $stmt = $con->prepare("SELECT username from rb_accounts WHERE userID = ?;");
                     $stmt->bind_param("s", $_SESSION['id']);
                     $stmt->execute();
                     $stmt->bind_result($db_username);
                     $stmt->fetch();
                     $stmt->close();
-                    $stmt = $con->prepare("INSERT INTO saved_recipes (user_id, recipe_id, date_saved) VALUES (?, ?, CURRENT_TIMESTAMP);");
+                    $stmt = $con->prepare("INSERT INTO saved_recipes (userID, recipe_id, date_saved) VALUES (?, ?, CURRENT_TIMESTAMP);");
                     $stmt->bind_param("si", $_SESSION['id'], $_POST['rec_id']);
                     $stmt->execute();
                     if ($stmt->affected_rows > 0) {
@@ -133,7 +132,7 @@ if (isset($_GET['type'])) {
         if (isset($_SESSION['id'])) {
             if (!empty($_GET['rid'])) {
                 $rid = $_GET['rid'];
-                $stmt = $con->prepare("SELECT COUNT(*) FROM saved_recipes WHERE user_id = ? AND recipe_id = ?");
+                $stmt = $con->prepare("SELECT COUNT(*) FROM saved_recipes WHERE userID = ? AND recipe_id = ?");
                 $stmt->bind_param("si", $_SESSION['id'], $rid);
                 $stmt->execute();
                 $stmt->bind_result($existing_count);
@@ -145,7 +144,7 @@ if (isset($_GET['type'])) {
             } else { exit(json_encode(["saved" => false])); }
         } else { exit(json_encode(["saved" => false])); }
     } elseif ($type === 'getSaved') {
-        $stmt = $con->prepare("SELECT r.recipe_name, r.id FROM saved_recipes sr JOIN recipes r ON sr.recipe_id = r.id WHERE sr.user_id = ?");
+        $stmt = $con->prepare("SELECT r.recipe_name, r.id FROM saved_recipes sr JOIN recipes r ON sr.recipe_id = r.id WHERE sr.userID = ?");
         $uid = $_SESSION['id'];
         $stmt->bind_param('s', $uid);
         $stmt->execute();
@@ -164,20 +163,31 @@ if (isset($_GET['type'])) {
     }
 } elseif (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $con->prepare("SELECT id, recipe_name, description, n_ingredients, ingredients, n_steps, steps, minutes, nutrition, images, ranking, comments
+    $sql = ("SELECT id, recipeName, description, nIngredients, ingredients, nSteps, steps, cTime, nutrition, imgSrc, ranking, comments
                             FROM recipes where id = ?");
-    $stmt->bind_param('s', $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) { $data = $row; }
-    header('Content-Type: application/json');
-    echo json_encode($data);
+    $stmt = sqlsrv_prepare($con, $sql, array($id));
 } else {
-    // No type parameter provided
     $data = [
         'error' => 'No type parameter provided'
     ];
     exit('No type');
 }
+
+
+if ($stmt === false) {
+    die(json_encode(array("error" => sqlsrv_errors())));
+}
+if (sqlsrv_execute($stmt) === false) {
+    die(json_encode(array("error" => sqlsrv_errors())));
+}
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    $data[] = $row;
+}
+// Free statement and connection resources
+sqlsrv_free_stmt($stmt);
+sqlsrv_close($con);
+// Return the JSON-encoded data
+header('Content-Type: application/json');
+echo json_encode($data);
 exit;
 ?>

@@ -91,12 +91,13 @@ async function loadPage() {
     const recipes = await fetch('../php/fetch.php?type=recipe');
     const data = await recipes.json();
     data.forEach(element => {
-      const name = capitalizeFirstLetters(element.recipe_name);
-      const a = cardCreator(name, element.description, element.images, element.id, element.ranking, element.nutrition, element.n_ingredients, element.n_steps);
+      const name = capitalizeFirstLetters(element.recipeName);
+      const a = cardCreator(name, element.description, element.imgSrc, element.id, element.ranking, element.nutrition, element.nIngredients, element.nSteps);
       $('.galleryRow').append(a);
     });
 
   } catch (error) {
+    console.log(error)
     showNotificationButton('Error adding entries:', error);
   }
 }
